@@ -21,8 +21,10 @@ class PyDie(QWidget):
         self.result_label = QLabel("Roll a Die")
         self.layout.addWidget(self.result_label)
 
+        #Dropdown to select die type, D20 by default
         self.die_selector = QComboBox()
         self.die_selector.addItems(self.die_values.keys())
+        self.die_selector.setCurrentText("D20")
         self.die_selector.currentTextChanged.connect(self.die_selector_handler)
         self.layout.addWidget(self.die_selector)
 
@@ -54,6 +56,21 @@ class PyDie(QWidget):
         
         self.setLayout(self.layout)
 
+        #Settings button, shown in botleft of window, small and unobtrusive
+        #Button shows a cogwheel icon
+        self.settings_button = QPushButton("Settings")
+        self.settings_button.setIcon(QtGui.QIcon("resources/settings.png"))
+        self.settings_button.setFixedSize(64, 25)
+        self.settings_button.clicked.connect(self.settings_button_handler)
+        self.layout.addWidget(self.settings_button, alignment=Qt.AlignRight)
+
+        #Checkbox to toggle roll sounds, enabled by default
+        self.sound_checkbox = QCheckBox("Roll/Flip Sounds")
+        self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
+        self.sound_checkbox.setChecked(True)
+        
+        
+
        
 
     def roll_die(self):
@@ -75,10 +92,7 @@ class PyDie(QWidget):
         else:
             #User hasn't enabled multi roll, so set num_rolls to 1    
             num_rolls = 1
-
-            
-        
-                
+           
         for i in range(int(num_rolls)):
             print(f"Roll {i+1} of {num_rolls}")
             if die_type == "Coin Flip":
@@ -95,10 +109,11 @@ class PyDie(QWidget):
 
 
         # Check if flip or roll and play correct sound
-        if(die_type == "Coin Flip"):
-            ws.PlaySound("resources/coinflip.wav", ws.SND_ASYNC)
-        else:
-            ws.PlaySound("resources/dieroll.wav", ws.SND_ASYNC)
+        if(self.sound_checkbox.isChecked()):
+            if(die_type == "Coin Flip"):
+                ws.PlaySound("resources/coinflip.wav", ws.SND_ASYNC)
+            else:
+                ws.PlaySound("resources/dieroll.wav", ws.SND_ASYNC)
 
     ## Input handler functions
             
@@ -115,7 +130,12 @@ class PyDie(QWidget):
         else:
             self.roll_button.setText("Roll")
             self.multi_roll_input.hide()
-
+    
+    def settings_button_handler(self):
+        print("Settings Button Clicked")
+        #Open settings window:
+        self.sound_checkbox.show()
+        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = PyDie()
