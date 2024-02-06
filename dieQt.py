@@ -5,6 +5,8 @@ import sys
 import random
 import winsound as ws
 
+#Needs updating to work with pyqt6 
+
 class PyDie(QWidget):
     def __init__(self):
         super().__init__()
