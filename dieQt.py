@@ -58,16 +58,20 @@ class PyDie(QWidget):
 
         #Settings button, shown in botleft of window, small and unobtrusive
         #Button shows a cogwheel icon
-        self.settings_button = QPushButton("Settings")
-        self.settings_button.setIcon(QtGui.QIcon("resources/settings.png"))
-        self.settings_button.setFixedSize(64, 25)
-        self.settings_button.clicked.connect(self.settings_button_handler)
-        self.layout.addWidget(self.settings_button, alignment=Qt.AlignRight)
+        # self.settings_button = QPushButton("Settings")
+        # self.settings_button.setIcon(QtGui.QIcon("resources/settings.png"))
+        # self.settings_button.setFixedSize(64, 25)
+        # self.settings_button.clicked.connect(self.settings_button_handler)
+        # self.layout.addWidget(self.settings_button, alignment=Qt.AlignRight)
 
-        #Checkbox to toggle roll sounds, enabled by default
-        self.sound_checkbox = QCheckBox("Roll/Flip Sounds")
+
+      #Sound button, shown in botleft of window, small and unobtrusive
+        self.sound_checkbox = QCheckBox("Sound")
         self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
+        self.sound_checkbox.setFixedSize(78, 25)
         self.sound_checkbox.setChecked(True)
+        self.sound_checkbox.stateChanged.connect(self.sound_checkbox_handler)
+        self.layout.addWidget(self.sound_checkbox, alignment=Qt.AlignRight)
         
         
 
@@ -160,6 +164,14 @@ class PyDie(QWidget):
         print("Settings Button Clicked")
         #Open settings window:
         self.sound_checkbox.show()
+    
+    def sound_checkbox_handler(self, state):
+        if state == Qt.Checked:
+            print("Sound Enabled")
+            self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
+        else:
+            print("Sound Disabled")
+            self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound_off.png"))
 
 class CoinDice():
     def __init__(self):
