@@ -13,6 +13,8 @@ class PyDie(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.setWindowTitle("PyDie")
+        
         self.layout = QVBoxLayout()
 
         self.result_label = QLabel("Roll a Die")
