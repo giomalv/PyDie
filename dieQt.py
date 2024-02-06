@@ -35,7 +35,7 @@ class PyDie(QWidget):
         self.layout.addWidget(self.custom_die_entry)
 
         ##Checkbox to allow user to indicate if they want to run multiple rolls
-        self.roll_multi_checkbox = QCheckBox("Roll Multiple Times?")
+        self.roll_multi_checkbox = QCheckBox("Roll Multiple")
         self.roll_multi_checkbox.stateChanged.connect(self.multi_checkbox_handler)
         self.layout.addWidget(self.roll_multi_checkbox)
 
@@ -77,7 +77,7 @@ class PyDie(QWidget):
         
         die_type = self.die_selector.currentText()
         roll_result = random.randint(1, self.die_values[die_type])
-        multi_roll = False  
+        multi_roll = False 
 
         if self.roll_multi_checkbox.isChecked():
             #User has selected multi roll, so get the number of rolls from the input
@@ -96,9 +96,7 @@ class PyDie(QWidget):
             multi_roll = False
            
         for i in range(int(num_rolls)):
-            print(f"Roll {i+1} of {num_rolls}")
             if die_type == "Coin Flip":
-                print("Coin Flip")
                 roll_result = random.randint(1, self.die_values[die_type])
                 roll_result = "Tails" if roll_result == 1 else "Heads"
             elif die_type == "Custom":
@@ -123,27 +121,82 @@ class PyDie(QWidget):
     ## Input handler functions
             
     def die_selector_handler(self, value):
+        multi_roll = self.roll_multi_checkbox.isChecked()
+
         if value == "Custom":
             self.custom_die_entry.show()
         else:
             self.custom_die_entry.hide()
 
+        if(multi_roll):
+            if value == "Coin Flip":
+                cd.set_type("Coin")
+                self.roll_button.setText(cd.multi_roll_text)
+            else:
+                cd.set_type("Dice")
+                self.roll_button.setText(cd.multi_roll_text)
+        else:
+            if value == "Coin Flip":
+                cd.set_type("Coin")
+                self.roll_button.setText(cd.action_text)
+            else:
+                cd.set_type("Dice")
+                self.roll_button.setText(cd.action_text)
+        
+        self.roll_multi_checkbox.setText(cd.checkbox_text)
+        self.multi_roll_input.setPlaceholderText(cd.multi_roll_input_placeholder)
+            
+    
     def multi_checkbox_handler(self, state):
         if state == Qt.Checked:
-            self.roll_button.setText("Roll Multiple")
+            self.roll_button.setText(cd.multi_roll_text)
             self.multi_roll_input.show()
         else:
-            self.roll_button.setText("Roll")
+            self.roll_button.setText(cd.action_text)
             self.multi_roll_input.hide()
+        
     
     def settings_button_handler(self):
         print("Settings Button Clicked")
         #Open settings window:
         self.sound_checkbox.show()
-        
+
+class CoinDice():
+    def __init__(self):
+        self.current_type = "Dice"
+        self.update_attributes()
+     
+    def update_attributes(self):
+        if self.current_type == "Dice":
+            self.singular = "Die"
+            self.plural = "Dice"
+            self.action_text = "Roll"
+            self.multi_roll_text = "Roll Multiple Dice"
+            self.multi_roll_input_placeholder = "Enter Number of Rolls"
+            self.checkbox_text = "Roll Multiple"
+            
+        else:
+            self.singular = "Coin"
+            self.plural = "Coins"
+            self.action_text = "Flip"
+            self.multi_roll_text = "Flip Multiple Coins"
+            self.multi_roll_input_placeholder = "Enter Number of Flips"
+            self.checkbox_text = "Flip Multiple"
+            
+    
+    def set_type(self, new_type):
+        self.current_type = new_type
+        self.update_attributes()
+    
+
+    
+
+    
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = PyDie()
+    cd = CoinDice()
     ex.show()
 
     # Apply dark theme
