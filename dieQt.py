@@ -23,6 +23,8 @@ class PyDie(QWidget):
         self.layout.addWidget(self.die_selector)
 
         self.custom_die_entry = QLineEdit()
+        self.custom_die_entry.setText("69")
+        self.custom_die_entry.setPlaceholderText("Enter Custom Die Value")
         self.custom_die_entry.hide()
         self.layout.addWidget(self.custom_die_entry)
 
