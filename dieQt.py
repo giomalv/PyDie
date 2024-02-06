@@ -79,25 +79,11 @@ class PyDie(QWidget):
 
     def roll_die(self):
         
-        die_type = self.die_selector.currentText()
-        roll_result = random.randint(1, self.die_values[die_type])
-        multi_roll = False 
+        die_type = self.get_die_type()
+        num_rolls, multi_roll, valid_roll = self.get_roll_info()
 
-        if self.roll_multi_checkbox.isChecked():
-            #User has selected multi roll, so get the number of rolls from the input
-            num_rolls = self.multi_roll_input.text()
-            multi_roll = True
-
-            if num_rolls.isnumeric():
-                #Insert a divider to separate the rolls
-                self.history.insertItem(0,"---------------------------")
-            else:
-                self.history.insertItem(0, "Invalid Number of Rolls!")
-                return
-        else:
-            #User hasn't enabled multi roll, so set num_rolls to 1    
-            num_rolls = 1
-            multi_roll = False
+        if not valid_roll:
+            return
            
         for i in range(int(num_rolls)):
             if die_type == "Coin Flip":
@@ -112,18 +98,35 @@ class PyDie(QWidget):
             self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
         
         if multi_roll:
-            self.history.insertItem(0,"----Multi Roll Complete, Rolled " + num_rolls + " Times----")
-                
+            self.history.insertItem(0,"----Multi Roll Complete, Rolled " + str(num_rolls) + " Dice----")
+        
+        self.play_sound()
+       
+    def get_die_type(self):
+        return self.die_selector.currentText()
+    
+    def get_roll_info(self):
+        multi_roll = self.roll_multi_checkbox.isChecked()
+        if multi_roll:
+            num_rolls = self.multi_roll_input.text()
 
-        # Check if flip or roll and play correct sound
+            if not num_rolls.isnumeric():
+                self.history.insertItem(0, "Invalid Number of Rolls!")
+                return 0, multi_roll, False
+        else:
+            num_rolls = 1
+        
+        return int(num_rolls), multi_roll, True
+
+    def play_sound(self):
+        die_type = self.get_die_type()
         if(self.sound_checkbox.isChecked()):
             if(die_type == "Coin Flip"):
                 ws.PlaySound("resources/coinflip.wav", ws.SND_ASYNC)
             else:
                 ws.PlaySound("resources/dieroll.wav", ws.SND_ASYNC)
-
-    ## Input handler functions
-            
+    
+    ## Input handler functions        
     def die_selector_handler(self, value):
         multi_roll = self.roll_multi_checkbox.isChecked()
 
