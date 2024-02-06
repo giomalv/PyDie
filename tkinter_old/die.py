@@ -2,6 +2,10 @@ import tkinter as tk
 import random
 import winsound as ws
 
+
+#This is an old version of PyDie, using tkinter instead of PyQt5. 
+#This version will not be maintained, and is only here for historical purposes.
+
 # Create a new Tk instance with a dark background
 root = tk.Tk()
 root.configure(bg='#333333')
