@@ -39,6 +39,7 @@ class PyDie(QWidget):
         self.setLayout(self.layout)
 
     def roll_die(self):
+        
         die_type = self.die_selector.currentText()
         roll_result = random.randint(1, self.die_values[die_type])
 
@@ -52,7 +53,6 @@ class PyDie(QWidget):
             else:
                 roll_result = "Invalid Custom Die Value"
 
-        #self.history.insertItem(0, f"{'Die Type:' + die_type + ' ' if die_type != 'Coin Flip' else die_type + ' '}Result: {roll_result}")
         if roll_result == "Invalid Custom Die Value":
             self.history.insertItem(0, roll_result)
         else:
@@ -60,10 +60,13 @@ class PyDie(QWidget):
                 
         self.result_label.setText(str(roll_result))
 
-        # Generate beep sound
-        ws.Beep(random.randrange(37,2500), 100)
-        #QApplication.beep()
+        # Check if flip or roll and play correct sound
+        if(die_type == "Coin Flip"):
+            ws.PlaySound("resources/coinflip.wav", ws.SND_ASYNC)
+        else:
+            ws.PlaySound("resources/dieroll.wav", ws.SND_ASYNC)
 
+    ## Show/hide custom die entry field
     def die_selector_handler(self, value):
         if value == "Custom":
             self.custom_die_entry.show()
