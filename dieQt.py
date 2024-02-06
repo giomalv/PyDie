@@ -77,21 +77,23 @@ class PyDie(QWidget):
         
         die_type = self.die_selector.currentText()
         roll_result = random.randint(1, self.die_values[die_type])
-       
+        multi_roll = False  
 
         if self.roll_multi_checkbox.isChecked():
             #User has selected multi roll, so get the number of rolls from the input
             num_rolls = self.multi_roll_input.text()
+            multi_roll = True
 
             if num_rolls.isnumeric():
                 #Insert a divider to separate the rolls
-                self.history.insertItem(0, "------------------------")
+                self.history.insertItem(0,"---------------------------")
             else:
                 self.history.insertItem(0, "Invalid Number of Rolls!")
                 return
         else:
             #User hasn't enabled multi roll, so set num_rolls to 1    
             num_rolls = 1
+            multi_roll = False
            
         for i in range(int(num_rolls)):
             print(f"Roll {i+1} of {num_rolls}")
@@ -106,7 +108,10 @@ class PyDie(QWidget):
                 roll_result = random.randint(1, self.die_values[die_type])
                     
             self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
-
+        
+        if multi_roll:
+            self.history.insertItem(0,"----Multi Roll Complete, Rolled " + num_rolls + " Times----")
+                
 
         # Check if flip or roll and play correct sound
         if(self.sound_checkbox.isChecked()):
