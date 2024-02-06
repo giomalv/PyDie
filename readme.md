@@ -3,7 +3,7 @@ PyDie is a simple Python GUI application for rolling dice and flipping coins. Or
 
 Development is continuing to flesh out the interface and usability using the much nicer PyQt framework.
 
-![PyDie Screenshot](resources\Screenshots\screensht1.png)
+![PyDie Screenshot](/resources/Screenshots/screensht1.png)
 
 ## Features
 * __Custom Die Sizes__\
