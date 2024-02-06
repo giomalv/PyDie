@@ -60,36 +60,39 @@ class PyDie(QWidget):
         
         die_type = self.die_selector.currentText()
         roll_result = random.randint(1, self.die_values[die_type])
-        
-        # Multi roll handling. This is not working correctly at present. Coinflips are not being handled correctly, and when rolling 2 dice, both results are the same.
+       
+
         if self.roll_multi_checkbox.isChecked():
+            #User has selected multi roll, so get the number of rolls from the input
             num_rolls = self.multi_roll_input.text()
+
             if num_rolls.isnumeric():
+                #Insert a divider to separate the rolls
                 self.history.insertItem(0, "------------------------")
-                for i in range(int(num_rolls) - 1):
-                    roll_result = random.randint(1, self.die_values[die_type])
-                    self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
             else:
-                self.history.insertItem(0, "Invalid Number of Rolls")
+                self.history.insertItem(0, "Invalid Number of Rolls!")
                 return
-
-
-        if die_type == "Coin Flip":
-            roll_result = "Tails" if roll_result == 1 else "Heads"
-
-        if die_type == "Custom":
-            custom_die_value = self.custom_die_entry.text()
-            if custom_die_value.isnumeric():
-                roll_result = random.randint(1, int(custom_die_value))
-            else:
-                roll_result = "Invalid Custom Die Value"
-
-        if roll_result == "Invalid Custom Die Value":
-            self.history.insertItem(0, roll_result)
         else:
-            self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
+            #User hasn't enabled multi roll, so set num_rolls to 1    
+            num_rolls = 1
+
+            
+        
                 
-        self.result_label.setText(str(roll_result))
+        for i in range(int(num_rolls)):
+            print(f"Roll {i+1} of {num_rolls}")
+            if die_type == "Coin Flip":
+                print("Coin Flip")
+                roll_result = random.randint(1, self.die_values[die_type])
+                roll_result = "Tails" if roll_result == 1 else "Heads"
+            elif die_type == "Custom":
+                print("Custom Die, Size:" + self.custom_die_entry.text())
+                roll_result = random.randint(1, int(self.custom_die_entry.text()))
+            else:
+                roll_result = random.randint(1, self.die_values[die_type])
+                    
+            self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
+
 
         # Check if flip or roll and play correct sound
         if(die_type == "Coin Flip"):
