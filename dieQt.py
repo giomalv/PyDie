@@ -37,8 +37,11 @@ class PyDie(QWidget):
 
         self.history = QListWidget()
         self.layout.addWidget(self.history)
-
+        self.history.insertItem(0, "Welcome to PyDie! Roll a die to get started.")
+        
         self.setLayout(self.layout)
+
+       
 
     def roll_die(self):
         
