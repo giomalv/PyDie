@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox, QLineEdit, QListWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox, QLineEdit, QListWidget, QCheckBox
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui
 import sys
@@ -16,7 +16,8 @@ class PyDie(QWidget):
         self.setWindowTitle("PyDie")
         
         self.layout = QVBoxLayout()
-
+        self.setMinimumWidth(300)
+       
         self.result_label = QLabel("Roll a Die")
         self.layout.addWidget(self.result_label)
 
@@ -30,6 +31,18 @@ class PyDie(QWidget):
         self.custom_die_entry.setPlaceholderText("Enter Custom Die Value")
         self.custom_die_entry.hide()
         self.layout.addWidget(self.custom_die_entry)
+
+        ##Checkbox to allow user to indicate if they want to run multiple rolls
+        self.roll_multi_checkbox = QCheckBox("Roll Multiple Times?")
+        self.roll_multi_checkbox.stateChanged.connect(self.multi_checkbox_handler)
+        self.layout.addWidget(self.roll_multi_checkbox)
+
+        #Number input to allow user to indicate how many times they want to roll. Hidden until checkbox is checked
+        self.multi_roll_input = QLineEdit()
+        self.multi_roll_input.setPlaceholderText("Enter Number of Rolls")
+        self.layout.addWidget(self.multi_roll_input)
+        self.multi_roll_input.hide()
+        
 
         self.roll_button = QPushButton("Roll")
         self.roll_button.clicked.connect(self.roll_die)
@@ -47,6 +60,19 @@ class PyDie(QWidget):
         
         die_type = self.die_selector.currentText()
         roll_result = random.randint(1, self.die_values[die_type])
+        
+        # Multi roll handling. This is not working correctly at present. Coinflips are not being handled correctly, and when rolling 2 dice, both results are the same.
+        if self.roll_multi_checkbox.isChecked():
+            num_rolls = self.multi_roll_input.text()
+            if num_rolls.isnumeric():
+                self.history.insertItem(0, "------------------------")
+                for i in range(int(num_rolls) - 1):
+                    roll_result = random.randint(1, self.die_values[die_type])
+                    self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
+            else:
+                self.history.insertItem(0, "Invalid Number of Rolls")
+                return
+
 
         if die_type == "Coin Flip":
             roll_result = "Tails" if roll_result == 1 else "Heads"
@@ -61,7 +87,7 @@ class PyDie(QWidget):
         if roll_result == "Invalid Custom Die Value":
             self.history.insertItem(0, roll_result)
         else:
-            self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }Result: {roll_result} ")
+            self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
                 
         self.result_label.setText(str(roll_result))
 
@@ -71,12 +97,21 @@ class PyDie(QWidget):
         else:
             ws.PlaySound("resources/dieroll.wav", ws.SND_ASYNC)
 
-    ## Show/hide custom die entry field
+    ## Input handler functions
+            
     def die_selector_handler(self, value):
         if value == "Custom":
             self.custom_die_entry.show()
         else:
             self.custom_die_entry.hide()
+
+    def multi_checkbox_handler(self, state):
+        if state == Qt.Checked:
+            self.roll_button.setText("Roll Multiple")
+            self.multi_roll_input.show()
+        else:
+            self.roll_button.setText("Roll")
+            self.multi_roll_input.hide()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
