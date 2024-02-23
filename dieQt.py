@@ -98,7 +98,7 @@ class PyDie(QWidget):
             self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
         
         if multi_roll:
-            self.history.insertItem(0,"----Multi Roll Complete, Rolled " + str(num_rolls) + " Dice----")
+            self.history.insertItem(0, cd.multi_roll_complete_text + " " + str(num_rolls) + " " + cd.plural + "----")
         
         self.play_sound()
        
@@ -188,6 +188,7 @@ class CoinDice():
             self.action_text = "Roll"
             self.multi_roll_text = "Roll Multiple Dice"
             self.multi_roll_input_placeholder = "Enter Number of Rolls"
+            self.multi_roll_complete_text = "Multi-Roll Complete, Rolled"
             self.checkbox_text = "Roll Multiple"
             
         else:
@@ -196,6 +197,7 @@ class CoinDice():
             self.action_text = "Flip"
             self.multi_roll_text = "Flip Multiple Coins"
             self.multi_roll_input_placeholder = "Enter Number of Flips"
+            self.multi_roll_complete_text = "Multi-Flip Complete, Flipped"
             self.checkbox_text = "Flip Multiple"
             
     
