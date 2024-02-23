@@ -90,15 +90,19 @@ class PyDie(QWidget):
                 roll_result = random.randint(1, self.die_values[die_type])
                 roll_result = "Tails" if roll_result == 1 else "Heads"
             elif die_type == "Custom":
-                print("Custom Die, Size:" + self.custom_die_entry.text())
-                roll_result = random.randint(1, int(self.custom_die_entry.text()))
+                try:
+                    print("Custom Die, Size:" + self.custom_die_entry.text())
+                    roll_result = random.randint(1, int(self.custom_die_entry.text()))
+                except:
+                    self.history.insertItem(0,"Invalid Custom Die Size!")
+                    return
             else:
                 roll_result = random.randint(1, self.die_values[die_type])
                     
             self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
         
         if multi_roll:
-            self.history.insertItem(0, cd.multi_roll_complete_text + " " + str(num_rolls) + " " + cd.plural + "----")
+            self.history.insertItem(0, "----" + cd.multi_roll_complete_text + " " + str(num_rolls) + " " + cd.plural + "----")
         
         self.play_sound()
        
