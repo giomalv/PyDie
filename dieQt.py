@@ -102,7 +102,12 @@ class PyDie(QWidget):
             self.history.insertItem(0, f"{'Die Type: D' + self.custom_die_entry.text() + ' ' if (die_type == 'Custom') else ('Die Type: ' + die_type + ' ') }| Result: {roll_result} ")
         
         if multi_roll:
-            self.history.insertItem(0, "----" + cd.multi_roll_complete_text + " " + str(num_rolls) + " " + cd.plural + "----")
+            if num_rolls == 1:
+                self.history.insertItem(0, "----" + cd.multi_roll_complete_text + " " + str(num_rolls) + " " + cd.singular + "----")
+            elif num_rolls == 0:
+                self.history.insertItem(0,"----No Dice!----")
+            else:
+                self.history.insertItem(0, "----" + cd.multi_roll_complete_text + " " + str(num_rolls) + " " + cd.plural + "----")
         
         self.play_sound()
        
@@ -208,11 +213,6 @@ class CoinDice():
     def set_type(self, new_type):
         self.current_type = new_type
         self.update_attributes()
-    
-
-    
-
-    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
