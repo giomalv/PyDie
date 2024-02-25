@@ -176,7 +176,7 @@ class SettingsWindow(QWidget):
         self.setWindowTitle("Settings")
         self.layout = QVBoxLayout()
         self.setMinimumWidth(300)
-        self.setMinimumHeight(200)
+        self.setMinimumHeight(125)
         self.setLayout(self.layout)
         
         # Custom notation label
@@ -224,12 +224,7 @@ class SettingsWindow(QWidget):
         self.save_button.setFixedWidth(50)
         self.layout.addWidget(self.save_button)
         self.save_button.clicked.connect(self.save_notation_button_handler)
-        
-        # Add a vertical spacer
-        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.layout.addItem(spacer)
-        
-
+          
     def showEvent(self,event):
         self.update_notations()
         super().showEvent(event)
