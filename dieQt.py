@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox, QLineEdit, QListWidget, QCheckBox
+from PyQt5.QtWidgets import QApplication, QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QLineEdit, QListWidget, QCheckBox
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui
 import sys
@@ -9,15 +9,20 @@ class PyDie(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QtGui.QIcon('resources/icon.ico'))
+        
         self.die_values = {"D100":100, "D20": 20, "D12": 12, "D10": 10, "D8": 8, "D6": 6, "D4": 4, "Coin Flip":2, "Custom": 1}
+        self.sound_enabled = True
+        self.heads_notation = "Heads"
+        self.tails_notation = "Tails"
+        
         self.initUI()
-
+        self.settings_window = SettingsWindow(self)
+  
     def initUI(self):
         self.setWindowTitle("PyDie")
-        
         self.layout = QVBoxLayout()
         self.setMinimumWidth(300)
-       
+
         self.result_label = QLabel("Roll a Die")
         self.layout.addWidget(self.result_label)
 
@@ -56,14 +61,13 @@ class PyDie(QWidget):
         
         self.setLayout(self.layout)
 
-      #Sound button, shown in botleft of window, small and unobtrusive
-        self.sound_checkbox = QCheckBox("Sound")
-        self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
-        self.sound_checkbox.setFixedSize(78, 25)
-        self.sound_checkbox.setChecked(True)
-        self.sound_checkbox.stateChanged.connect(self.sound_checkbox_handler)
-        self.layout.addWidget(self.sound_checkbox, alignment=Qt.AlignRight)
-                     
+        #Settings button, shown in botright of window, small and unobtrusive
+        self.settings_button = QPushButton("Settings")
+        self.settings_button.setIcon(QtGui.QIcon("resources/settings.png"))
+        self.settings_button.setFixedSize(78, 25)
+        self.layout.addWidget(self.settings_button, alignment=Qt.AlignRight)
+        self.settings_button.clicked.connect(self.settings_button_handler)
+
     def roll_die(self):
         
         die_type = self.get_die_type()
@@ -75,7 +79,7 @@ class PyDie(QWidget):
         for i in range(int(num_rolls)):
             if die_type == "Coin Flip":
                 roll_result = random.randint(1, self.die_values[die_type])
-                roll_result = "Tails" if roll_result == 1 else "Heads"
+                roll_result = self.tails_notation if roll_result == 1 else self.heads_notation
             elif die_type == "Custom":
                 try:
                     roll_result = random.randint(1, int(self.custom_die_entry.text()))
@@ -116,7 +120,7 @@ class PyDie(QWidget):
 
     def play_sound(self):
         die_type = self.get_die_type()
-        if(self.sound_checkbox.isChecked()):
+        if(self.sound_enabled):
             if(die_type == "Coin Flip"):
                 ws.PlaySound("resources/coinflip.wav", ws.SND_ASYNC)
             else:
@@ -157,20 +161,97 @@ class PyDie(QWidget):
         else:
             self.roll_button.setText(cd.action_text)
             self.multi_roll_input.hide()
-        
-    
+           
     def settings_button_handler(self):
         print("Settings Button Clicked")
-        #Open settings window:
-        self.sound_checkbox.show()
-    
-    def sound_checkbox_handler(self, state):
+        self.settings_window.show()
+
+class SettingsWindow(QWidget):
+    def __init__(self, pydie_instace, parent=None):
+        super().__init__(parent)
+        self.pydie_instance = pydie_instace
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Settings")
+        self.layout = QVBoxLayout()
+        self.setMinimumWidth(300)
+        self.setMinimumHeight(200)
+        self.setLayout(self.layout)
+        
+        # Custom notation label
+        self.notation_label = QLabel("Custom Heads/Tails Notation:")
+        font = QtGui.QFont()
+        font.setBold(True)
+        self.notation_label.setFont(font)
+        self.notation_label.setAlignment(Qt.AlignBottom)
+        self.layout.addWidget(self.notation_label)
+
+        # Group for heads/tails notation
+        self.notation_group = QHBoxLayout()
+        self.notation_group.setSpacing(0)
+        self.notation_group.setContentsMargins(0, 0, 0, 0)
+
+        # Input boxes to change heads/tails notation
+        self.heads_input = QLineEdit()
+        self.heads_input.setPlaceholderText("Enter Heads Notation")
+        self.heads_input.setFixedWidth(150)
+        self.notation_group.addWidget(self.heads_input)
+
+        self.tails_input = QLineEdit()
+        self.tails_input.setPlaceholderText("Enter Tails Notation")
+        self.tails_input.setFixedWidth(150)
+        self.notation_group.addWidget(self.tails_input)
+
+        # Create a QWidget, set its layout to notation_group, and set its maximum height
+        self.notation_widget = QWidget()
+        self.notation_widget.setLayout(self.notation_group)
+        self.notation_widget.setMaximumHeight(50)  # Set the maximum height to 50 pixels
+        
+        # Add the widget to the main layout
+        self.layout.addWidget(self.notation_widget)
+        
+        # Sound checkbox
+        self.sound_checkbox = QCheckBox("Sound")
+        self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
+        self.sound_checkbox.setFixedSize(78, 25)
+        self.sound_checkbox.setChecked(True)
+        self.sound_checkbox.stateChanged.connect(self.sound_checkbox_handler)
+        self.layout.addWidget(self.sound_checkbox)
+        
+        #Settings save button 
+        self.save_button = QPushButton("Save")
+        self.save_button.setFixedWidth(50)
+        self.layout.addWidget(self.save_button)
+        self.save_button.clicked.connect(self.save_notation_button_handler)
+        
+        # Add a vertical spacer
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacer)
+        
+
+    def showEvent(self,event):
+        self.update_notations()
+        super().showEvent(event)
+
+    def update_notations(self):
+        self.heads_input.setText(self.pydie_instance.heads_notation)
+        self.tails_input.setText(self.pydie_instance.tails_notation)
+
+    def sound_checkbox_handler(self,state):
         if state == Qt.Checked:
             print("Sound Enabled")
             self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
+            self.pydie_instance.sound_enabled = True
         else:
             print("Sound Disabled")
             self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound_off.png"))
+            self.pydie_instance.sound_enabled = False
+
+    def save_notation_button_handler(self):
+        self.pydie_instance.heads_notation = self.heads_input.text()
+        self.pydie_instance.tails_notation = self.tails_input.text()
+        self.close()
 
 class CoinDice():
     def __init__(self):
