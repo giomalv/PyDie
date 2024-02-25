@@ -56,15 +56,6 @@ class PyDie(QWidget):
         
         self.setLayout(self.layout)
 
-        #Settings button, shown in botleft of window, small and unobtrusive
-        #Button shows a cogwheel icon
-        # self.settings_button = QPushButton("Settings")
-        # self.settings_button.setIcon(QtGui.QIcon("resources/settings.png"))
-        # self.settings_button.setFixedSize(64, 25)
-        # self.settings_button.clicked.connect(self.settings_button_handler)
-        # self.layout.addWidget(self.settings_button, alignment=Qt.AlignRight)
-
-
       #Sound button, shown in botleft of window, small and unobtrusive
         self.sound_checkbox = QCheckBox("Sound")
         self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound.png"))
@@ -72,11 +63,7 @@ class PyDie(QWidget):
         self.sound_checkbox.setChecked(True)
         self.sound_checkbox.stateChanged.connect(self.sound_checkbox_handler)
         self.layout.addWidget(self.sound_checkbox, alignment=Qt.AlignRight)
-        
-        
-
-       
-
+                     
     def roll_die(self):
         
         die_type = self.get_die_type()
