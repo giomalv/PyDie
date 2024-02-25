@@ -241,11 +241,14 @@ class SettingsWindow(QWidget):
         else:
             print("Sound Disabled")
             self.sound_checkbox.setIcon(QtGui.QIcon("resources/sound_off.png"))
-            self.pydie_instance.sound_enabled = False
 
     def save_notation_button_handler(self):
+        #Save notations back to pydie instance
         self.pydie_instance.heads_notation = self.heads_input.text()
         self.pydie_instance.tails_notation = self.tails_input.text()
+        #save sound setting back to pydie instance
+        self.pydie_instance.sound_enabled = self.sound_checkbox.isChecked()
+        
         self.close()
 
 class CoinDice():
